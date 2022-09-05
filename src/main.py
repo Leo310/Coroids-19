@@ -1,3 +1,4 @@
+import sys
 import pygame
 
 import eventhandler
@@ -13,14 +14,10 @@ pygame.display.flip()
 @eventhandler.register(pygame.QUIT)
 def quit_game():
     pygame.quit()
-    quit(0)
+    sys.exit(0)
 
 
-running = True
-while running:
+RUNNING = True
+while RUNNING:
     for event in pygame.event.get():
-        handler = eventhandler.event_handler_registry.get(event.type)
-        if handler:
-            handler()
-        else:
-            print("No handler registered for event: ", event)
+        eventhandler.call_registered(event.type)
