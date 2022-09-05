@@ -1,16 +1,30 @@
-event_handler_registry = {}
+from enum import Enum
+import pygame
 
 
-def register(event_type, *args):
-    def decorator(fn):
-        event_handler_registry[event_type] = {"func": fn, "args": args}
-        return fn
-    return decorator
+class State(Enum):
+    KEYPRESSED = 'a'
 
 
-def call_registered(event_type):
-    handler = event_handler_registry.get(event_type)
-    if handler:
-        handler["func"](*handler["args"])
-    # else:
-        # print("No handler registered for event: ", event_type)
+event_handler_registry = {
+    pygame.QUIT: [],
+    pygame.KEYDOWN: [],
+    pygame.KEYUP: [],
+    pygame.MOUSEMOTION: [],
+}
+
+
+def register(func, event_type, key=None, **kwargs):
+    event_handler_registry[event_type].append(
+        {"func":  func, "kwargs": kwargs, "key": key})
+
+
+def call_registered(event):
+    if event.type == pygame.KEYDOWN:
+        for handler in event_handler_registry[pygame.KEYDOWN]:
+            if handler["key"] == event.key:
+                handler["func"](**handler["kwargs"])
+
+    if event.type == pygame.QUIT:
+        for handler in event_handler_registry[pygame.QUIT]:
+            handler["func"](**handler["kwargs"])
