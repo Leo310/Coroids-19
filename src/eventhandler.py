@@ -10,7 +10,7 @@ event_handler_registry = {
     pygame.QUIT: [],
     pygame.KEYDOWN: [],
     pygame.KEYUP: [],
-    pygame.MOUSEMOTION: [],
+    pygame.MOUSEBUTTONDOWN: [],
 }
 
 
@@ -28,3 +28,7 @@ def call_registered(event):
     if event.type == pygame.QUIT:
         for handler in event_handler_registry[pygame.QUIT]:
             handler["func"](**handler["kwargs"])
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        for handler in event_handler_registry[pygame.MOUSEBUTTONDOWN]:
+            handler["func"](event.pos, **handler["kwargs"])
