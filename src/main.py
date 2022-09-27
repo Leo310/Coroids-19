@@ -15,12 +15,10 @@ def main():
 
     width, height = (1300, 750)
     screen = pygame.display.set_mode((width, height))
-    p1 = player.Player((500, 500), PLAYER_SPEED, PROJECTILE_SPEED)
+    p1 = player.Player((500, 500))
 
     while True:
-        dt = clock.tick(60) / 1000
-
-        p1.projectile_speed = PROJECTILE_SPEED * dt
+        dt = clock.tick() / 1000
 
         if p1.pos.x < 0:
             p1.pos.x = width
@@ -33,6 +31,7 @@ def main():
 
         screen.fill("#121212")
 
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
@@ -41,6 +40,7 @@ def main():
             elif event.type == pygame.QUIT:
                 quit_game()
 
+        # State(Key pressed)-handling
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             p1.rotate(-PLAYER_ROTATION * dt)
@@ -52,7 +52,7 @@ def main():
             p1.move(PLAYER_SPEED * dt)
 
         for projectile in p1.projectiles:
-            projectile.move()
+            projectile.move(PROJECTILE_SPEED * dt)
             projectile.draw(screen)
 
         p1.draw(screen)

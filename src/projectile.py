@@ -2,9 +2,7 @@ import pygame
 
 
 class Projectile:
-    def __init__(self, pos, direction, vel):
-        self.vel = vel
-
+    def __init__(self, pos, direction):
         self.__direction = direction
         self.__pos = pos
         self.__image = pygame.image.load("projectile.png")
@@ -13,8 +11,8 @@ class Projectile:
         self.__rotated_img = pygame.transform.rotate(
             self.__image, self.__direction.angle_to(pygame.Vector2(0, 1)) - 90)
 
-    def move(self):
-        self.__pos += self.__direction * self.vel
+    def move(self, velocity):
+        self.__pos += self.__direction * velocity
 
     def draw(self, surface):
         surface.blit(self.__rotated_img, self.__pos -

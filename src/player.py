@@ -4,10 +4,8 @@ from projectile import Projectile
 
 
 class Player:
-    def __init__(self, pos, vel, projectile_speed):
+    def __init__(self, pos):
         self.pos = pygame.Vector2(pos)
-        self.vel = vel
-        self.projectile_speed = projectile_speed
         self.projectiles = []
 
         self.__image = pygame.image.load("tcell.webp")
@@ -31,8 +29,7 @@ class Player:
             shoot_direction = shoot_direction.normalize()
         else:
             shoot_direction = self.__direction
-        self.projectiles.append(Projectile(
-            self.pos.copy(), shoot_direction, self.projectile_speed))
+        self.projectiles.append(Projectile(self.pos.copy(), shoot_direction))
 
     def draw(self, surface):
         surface.blit(self.__rotated_img, self.pos -
