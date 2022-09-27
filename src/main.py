@@ -1,13 +1,10 @@
 import sys
 import pygame
-
-import eventhandler
-import statehandler
 import player
 
 # could make them variable if we dynamically need to change them
 PLAYER_SPEED = 300
-PROJECTILE_SPEED = 600
+PROJECTILE_SPEED = 900
 PLAYER_ROTATION = 120
 
 
@@ -18,28 +15,11 @@ def main():
 
     width, height = (1300, 750)
     screen = pygame.display.set_mode((width, height))
-    p1 = player.Player((500, 500), PLAYER_SPEED, PLAYER_ROTATION,
-                       PROJECTILE_SPEED)
-
-    eventhandler.register(quit_game, pygame.QUIT)
-    eventhandler.register(p1.shoot, pygame.MOUSEBUTTONDOWN)
-    statehandler.register(p1.move_up,
-                          statehandler.KEYPRESSED,
-                          keys=[pygame.K_UP, pygame.K_w])
-    statehandler.register(p1.move_down,
-                          statehandler.KEYPRESSED,
-                          keys=[pygame.K_DOWN, pygame.K_s])
-    statehandler.register(p1.rotate_left,
-                          statehandler.KEYPRESSED,
-                          keys=[pygame.K_LEFT, pygame.K_a])
-    statehandler.register(p1.rotate_right,
-                          statehandler.KEYPRESSED,
-                          keys=[pygame.K_RIGHT, pygame.K_d])
+    p1 = player.Player((500, 500), PLAYER_SPEED, PROJECTILE_SPEED)
 
     while True:
         dt = clock.tick(60) / 1000
-        p1.vel = PLAYER_SPEED * dt
-        p1.rotation_speed = PLAYER_ROTATION * dt
+
         p1.projectile_speed = PROJECTILE_SPEED * dt
 
         if p1.pos.x < 0:
@@ -54,13 +34,26 @@ def main():
         screen.fill("#121212")
 
         for event in pygame.event.get():
-            eventhandler.call_registered(event)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    # p1.shoot(pygame.mouse.get_pos()) # shoots to mouse pos
+                    p1.shoot()  # shoots in player direction
+            elif event.type == pygame.QUIT:
+                quit_game()
 
-        statehandler.update_registered()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            p1.rotate(-PLAYER_ROTATION * dt)
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+            p1.rotate(PLAYER_ROTATION * dt)
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            p1.move(-PLAYER_SPEED * dt)
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
+            p1.move(PLAYER_SPEED * dt)
 
-        for projetile in p1.projectiles:
-            projetile.move()
-            projetile.draw(screen)
+        for projectile in p1.projectiles:
+            projectile.move()
+            projectile.draw(screen)
 
         p1.draw(screen)
         pygame.display.flip()
