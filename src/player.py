@@ -37,6 +37,11 @@ class Player(GameObject):
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             self.move(self._vel * dt)
 
+        # Projectile out of bounds logic
+        for projectile in list(self._game_objects):
+            if projectile.out_of_bounds():
+                self._game_objects.remove(projectile)
+
         # Player out of bounds logic
         display_info = pygame.display.Info()
         width = display_info.current_w
