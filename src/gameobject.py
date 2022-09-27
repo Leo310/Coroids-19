@@ -3,8 +3,10 @@ import pygame
 
 
 class GameObject:
-    def __init__(self, pos=(0, 0), velocity=0, rotation_speed=0, image_path="", image_size=(0, 0), zindex=0):
+    def __init__(self, pos=(0, 0), velocity=0, rotation_speed=0,
+                 image_path="", image_size=(0, 0), zindex=0):
         self.zindex = zindex
+
         self._game_objects = []
         self._pos = pygame.Vector2(pos)
         self._vel = velocity
