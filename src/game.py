@@ -9,7 +9,7 @@ from player import Player
 class Game(GameObject):
     def __init__(self):
         size = GameConfig.SIZE.value
-        super().__init__(image_size=size, image_path="background.png", zindex=0)
+        super().__init__(image_size=size, image_path="assets/background.png", zindex=0)
 
         # setting game to middle pos because image need to be renderd in top right
         middle_pos = (size[0]/2, size[1]/2)

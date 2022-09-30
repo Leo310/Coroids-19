@@ -1,9 +1,13 @@
+import os
+import sys
 import pygame
 from config import GameConfig
 from game import Game
 
 
 def main():
+    os.chdir(os.path.dirname(sys.argv[0]))
+
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(GameConfig.SIZE.value)
