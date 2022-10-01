@@ -7,7 +7,7 @@ class GameConfig(Enum):
 
 class PlayerConfig(Enum):
     SPEED = 300
-    ROTATION_SPEED = 120
+    ROTATION_SPEED = 200
 
 
 class ProjectileConfig(Enum):

@@ -9,7 +9,8 @@ class Player(GameObject):
     def __init__(self, pos):
         super().__init__(pos, PlayerConfig.SPEED.value,
                          PlayerConfig.ROTATION_SPEED.value,
-                         "assets/tcell.webp", (200, 200), zindex=10)
+                         "assets/tcell.webp", (100, 100), zindex=10)
+        self.game_objects["projectiles"] = []
 
     def shoot(self, target=None):
         if target:
@@ -17,7 +18,7 @@ class Player(GameObject):
             shoot_direction = shoot_direction.normalize()
         else:
             shoot_direction = self._direction
-        self._game_objects.append(Projectile(
+        self.game_objects["projectiles"].append(Projectile(
             self._pos.copy(), shoot_direction))
 
     def update(self, dt):
@@ -38,9 +39,9 @@ class Player(GameObject):
             self.move(self._vel * dt)
 
         # Projectile out of bounds logic
-        for projectile in list(self._game_objects):
+        for projectile in list(self.game_objects["projectiles"]):
             if projectile.out_of_bounds():
-                self._game_objects.remove(projectile)
+                self.game_objects["projectiles"].remove(projectile)
 
         # Player out of bounds logic
         display_info = pygame.display.Info()
