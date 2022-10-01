@@ -9,7 +9,7 @@ class Player(GameObject):
     def __init__(self, pos):
         super().__init__(pos, PlayerConfig.SPEED.value,
                          PlayerConfig.ROTATION_SPEED.value,
-                         "tcell.webp", (200, 200), zindex=10)
+                         "assets/tcell.webp", (200, 200), zindex=10)
 
     def shoot(self, target=None):
         if target:
