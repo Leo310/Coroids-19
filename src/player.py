@@ -8,11 +8,14 @@ from projectile import Projectile
 class Player(GameObject):
     def __init__(self, pos):
         super().__init__(pos, PlayerConfig.SPEED.value,
-                         PlayerConfig.ROTATION_SPEED.value,
                          "assets/t_cell.png", (100, 100))
+
         self.groups["projectiles"] = pygame.sprite.Group()
+
         self._layer = 10
         self.radius = 80/2
+
+        self.__rotation_speed = PlayerConfig.ROTATION_SPEED.value
 
     def shoot(self, target=None):
         if target:
@@ -29,18 +32,24 @@ class Player(GameObject):
                 # p1.shoot(pygame.mouse.get_pos()) # shoots to mouse pos
                 # shoots in player direction
                 self.shoot()
+            if event.key == pygame.K_LSHIFT:
+                self._vel *= 2
+
+        for event in pygame.event.get(pygame.KEYUP):
+            if event.key == pygame.K_LSHIFT:
+                self._vel /= 2
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            self.rotate(-self._rotation_speed * dt)
+            self.rotate(-self.__rotation_speed * dt)
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            self.rotate(self._rotation_speed * dt)
+            self.rotate(self.__rotation_speed * dt)
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.move(-self._vel * dt)
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             self.move(self._vel * dt)
 
-        # Projectile out of bounds logic
+            # Projectile out of bounds logic
         for projectile in self.groups["projectiles"].sprites():
             if projectile.out_of_bounds():
                 projectile.kill()

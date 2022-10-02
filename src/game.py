@@ -21,19 +21,6 @@ class Game(GameObject):
         self.groups["enemies"] = pygame.sprite.Group()
         self.groups["player"] = pygame.sprite.Group()
 
-        for _ in range(4):
-            self.groups["enemies"].add(
-                Enemy((0, random.randint(0, size[1]))))
-        for _ in range(4):
-            self.groups["enemies"].add(
-                Enemy((random.randint(0, size[0]), 0)))
-        for _ in range(4):
-            self.groups["enemies"].add(
-                Enemy((size[0], random.randint(0, size[1]))))
-        for _ in range(4):
-            self.groups["enemies"].add(
-                Enemy((random.randint(0, size[0]), size[1])))
-
         self.groups["player"].add(Player(middle_pos))
 
     def update(self, dt):
@@ -41,6 +28,21 @@ class Game(GameObject):
         if pygame.event.get(pygame.QUIT):
             pygame.quit()
             sys.exit(0)
+
+        size = GameConfig.SIZE.value
+        if len(self.groups["enemies"]) < 10:
+            # left
+            self.groups["enemies"].add(
+                Enemy((-100, random.randint(0, size[1]))))
+            # top
+            self.groups["enemies"].add(
+                Enemy((random.randint(0, size[0]), -100)))
+            # right
+            self.groups["enemies"].add(
+                Enemy((size[0]+100, random.randint(0, size[1]))))
+            # bottom
+            self.groups["enemies"].add(
+                Enemy((random.randint(0, size[0]), size[1] + 100)))
 
         for player in self.groups["player"].sprites():
             for enemy in self.groups["enemies"].sprites():

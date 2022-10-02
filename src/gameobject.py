@@ -3,11 +3,12 @@ import pygame
 
 
 class GameObject(pygame.sprite.Sprite):
-    def __init__(self, pos=(0, 0), velocity=0, rotation_speed=0,
+    def __init__(self, pos=(0, 0), velocity=0,
                  image_path="", image_size=(0, 0)):
         super().__init__()
         self.image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(self.image, image_size)
+        self.image = pygame.transform.smoothscale(
+            self.image.convert_alpha(), image_size)
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.groups = {}
@@ -15,7 +16,6 @@ class GameObject(pygame.sprite.Sprite):
         self._direction = pygame.Vector2(0, 1)
         self._pos = pygame.Vector2(pos)
         self._vel = velocity
-        self._rotation_speed = rotation_speed
         self._og_image = self.image
         self._total_angle = 0
 
