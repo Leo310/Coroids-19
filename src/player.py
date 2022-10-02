@@ -16,13 +16,15 @@ class Player(GameObject):
         self.radius = 80/2
 
         self.__rotation_speed = PlayerConfig.ROTATION_SPEED.value
+        self.__piu = pygame.mixer.Sound("assets/piu.mp3")
 
     def shoot(self, target=None):
+        self.__piu.play()
         if target:
-            shoot_direction = pygame.Vector2(target) - self._pos
+            shoot_direction = pygame.Vector2(target) - self.pos
             shoot_direction = shoot_direction.normalize()
         else:
-            shoot_direction = self._direction
+            shoot_direction = self.direction
         self.groups["projectiles"].add(Projectile(
             self.rect.center, shoot_direction))
 
@@ -33,11 +35,11 @@ class Player(GameObject):
                 # shoots in player direction
                 self.shoot()
             if event.key == pygame.K_LSHIFT:
-                self._vel *= 2
+                self.vel *= 2
 
         for event in pygame.event.get(pygame.KEYUP):
             if event.key == pygame.K_LSHIFT:
-                self._vel /= 2
+                self.vel /= 2
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
@@ -45,9 +47,9 @@ class Player(GameObject):
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.rotate(self.__rotation_speed * dt)
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.move(-self._vel * dt)
+            self.move(-self.vel * dt)
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            self.move(self._vel * dt)
+            self.move(self.vel * dt)
 
             # Projectile out of bounds logic
         for projectile in self.groups["projectiles"].sprites():
@@ -58,11 +60,11 @@ class Player(GameObject):
         display_info = pygame.display.Info()
         width = display_info.current_w
         height = display_info.current_h
-        if self._pos.x < 0:
-            self._pos.x = width
-        elif self._pos.x > width:
-            self._pos.x = 0
-        if self._pos.y < 0:
-            self._pos.y = height
-        elif self._pos.y > height:
-            self._pos.y = 0
+        if self.pos.x < 0:
+            self.pos.x = width
+        elif self.pos.x > width:
+            self.pos.x = 0
+        if self.pos.y < 0:
+            self.pos.y = height
+        elif self.pos.y > height:
+            self.pos.y = 0

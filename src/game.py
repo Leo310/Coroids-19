@@ -30,7 +30,7 @@ class Game(GameObject):
             sys.exit(0)
 
         size = GameConfig.SIZE.value
-        if len(self.groups["enemies"]) < 10:
+        if len(self.groups["enemies"]) < 12:
             # left
             self.groups["enemies"].add(
                 Enemy((-100, random.randint(0, size[1]))))
@@ -46,8 +46,8 @@ class Game(GameObject):
 
         for player in self.groups["player"].sprites():
             for enemy in self.groups["enemies"].sprites():
-                enemy._direction = player._pos - enemy._pos
-                enemy._direction = enemy._direction.normalize()
+                enemy.direction = player.pos - enemy.pos
+                enemy.direction = enemy.direction.normalize()
 
         for player in self.groups["player"].sprites():
             pygame.sprite.groupcollide(

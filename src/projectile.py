@@ -8,9 +8,9 @@ class Projectile(GameObject):
     def __init__(self, pos, direction):
         super().__init__(pos, ProjectileConfig.SPEED.value,
                          "assets/antibody.png", (60, 38))
-        self._direction = direction
+        self.direction = direction
         self.image = pygame.transform.rotate(
-            self._og_image, self._direction.angle_to(pygame.Vector2(0, 1)) - 90)
+            self._og_image, self.direction.angle_to(pygame.Vector2(0, 1)) - 90)
         self._layer = 5
 
     def out_of_bounds(self):
@@ -22,4 +22,4 @@ class Projectile(GameObject):
             or self.rect.centery + bounds.y < 0 or self.rect.centery - bounds.y > height
 
     def update(self, dt):
-        self.move(self._vel * dt)
+        self.move(self.vel * dt)
