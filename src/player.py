@@ -9,8 +9,10 @@ class Player(GameObject):
     def __init__(self, pos):
         super().__init__(pos, PlayerConfig.SPEED.value,
                          PlayerConfig.ROTATION_SPEED.value,
-                         "assets/tcell.webp", (100, 100), zindex=10)
-        self.game_objects["projectiles"] = []
+                         "assets/t_cell.png", (100, 100))
+        self.groups["projectiles"] = pygame.sprite.Group()
+        self._layer = 10
+        self.radius = 80/2
 
     def shoot(self, target=None):
         if target:
@@ -18,8 +20,8 @@ class Player(GameObject):
             shoot_direction = shoot_direction.normalize()
         else:
             shoot_direction = self._direction
-        self.game_objects["projectiles"].append(Projectile(
-            self._pos.copy(), shoot_direction))
+        self.groups["projectiles"].add(Projectile(
+            self.rect.center, shoot_direction))
 
     def update(self, dt):
         for event in pygame.event.get(pygame.KEYDOWN):
@@ -39,9 +41,9 @@ class Player(GameObject):
             self.move(self._vel * dt)
 
         # Projectile out of bounds logic
-        for projectile in list(self.game_objects["projectiles"]):
+        for projectile in self.groups["projectiles"].sprites():
             if projectile.out_of_bounds():
-                self.game_objects["projectiles"].remove(projectile)
+                projectile.kill()
 
         # Player out of bounds logic
         display_info = pygame.display.Info()

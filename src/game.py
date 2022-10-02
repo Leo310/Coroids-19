@@ -12,28 +12,29 @@ from enemy import Enemy
 class Game(GameObject):
     def __init__(self):
         size = GameConfig.SIZE.value
-        super().__init__(image_size=size, image_path="assets/background.png", zindex=0)
+        super().__init__(image_size=size, image_path="assets/background.png")
+        self._layer = 0
         # setting game to middle pos because image need to be renderd in top right
         middle_pos = (size[0]/2, size[1]/2)
-        self._pos = middle_pos
+        self.rect.center = middle_pos
 
-        self.game_objects["enemies"] = []
-        self.game_objects["player"] = []
+        self.groups["enemies"] = pygame.sprite.Group()
+        self.groups["player"] = pygame.sprite.Group()
 
         for _ in range(4):
-            self.game_objects["enemies"].append(
+            self.groups["enemies"].add(
                 Enemy((0, random.randint(0, size[1]))))
         for _ in range(4):
-            self.game_objects["enemies"].append(
+            self.groups["enemies"].add(
                 Enemy((random.randint(0, size[0]), 0)))
         for _ in range(4):
-            self.game_objects["enemies"].append(
+            self.groups["enemies"].add(
                 Enemy((size[0], random.randint(0, size[1]))))
         for _ in range(4):
-            self.game_objects["enemies"].append(
+            self.groups["enemies"].add(
                 Enemy((random.randint(0, size[0]), size[1])))
 
-        self.game_objects["player"].append(Player(middle_pos))
+        self.groups["player"].add(Player(middle_pos))
 
     def update(self, dt):
         # Event handling
@@ -41,20 +42,15 @@ class Game(GameObject):
             pygame.quit()
             sys.exit(0)
 
-        for player in self.game_objects["player"]:
-            for enemy in self.game_objects["enemies"]:
+        for player in self.groups["player"].sprites():
+            for enemy in self.groups["enemies"].sprites():
                 enemy._direction = player._pos - enemy._pos
                 enemy._direction = enemy._direction.normalize()
 
-        for player in self.game_objects["player"]:
-            for projectile in list(player.game_objects["projectiles"]):
-                for enemy in list(self.game_objects["enemies"]):
-                    if projectile.is_colliding(enemy):
-                        player.game_objects["projectiles"].remove(
-                            projectile)
-                        self.game_objects["enemies"].remove(enemy)
+        for player in self.groups["player"].sprites():
+            pygame.sprite.groupcollide(
+                player.groups["projectiles"], self.groups["enemies"], True, True)
 
-        for player in list(self.game_objects["player"]):
-            for enemy in self.game_objects["enemies"]:
-                if enemy.is_colliding(player):
-                    self.game_objects["player"].remove(player)
+        pygame.sprite.groupcollide(
+            self.groups["player"], self.groups["enemies"], True, False,
+            collided=pygame.sprite.collide_circle)

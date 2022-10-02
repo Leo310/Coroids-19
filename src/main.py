@@ -13,15 +13,18 @@ def main():
     screen = pygame.display.set_mode(GameConfig.SIZE.value)
 
     game = Game()
+    root_group = pygame.sprite.LayeredUpdates()
+    root_group.add(game)
 
     while True:
         dt = clock.tick() / 1000
         screen.fill((0, 0, 0))  # Clear the screen each frame.
 
-        for gameobject in sorted(game.get_all_game_objects(), key=(
-                lambda gameobj: gameobj.zindex)):
-            gameobject.update(dt)
-            gameobject.draw(screen)
+        for group in game.get_groups():
+            root_group.add(group.sprites())
+
+        root_group.update(dt)
+        root_group.draw(screen)
 
         pygame.display.flip()
 
