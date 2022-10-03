@@ -12,7 +12,8 @@ from enemy import Enemy
 class Game(GameObject):
     def __init__(self):
         size = GameConfig.SIZE.value
-        super().__init__(image_size=size, image_path="assets/background.png")
+        super().__init__(image_size=size,
+                         images_path=["assets/background.png"])
         self._layer = 0
         # setting game to middle pos because image need to be renderd in top right
         middle_pos = (size[0]/2, size[1]/2)
@@ -23,14 +24,9 @@ class Game(GameObject):
 
         self.groups["player"].add(Player(middle_pos))
 
-    def update(self, dt):
-        # Event handling
-        if pygame.event.get(pygame.QUIT):
-            pygame.quit()
-            sys.exit(0)
-
+    def __spawn_enemies(self):
         size = GameConfig.SIZE.value
-        if len(self.groups["enemies"]) < 12:
+        if len(self.groups["enemies"]) < 8:
             # left
             self.groups["enemies"].add(
                 Enemy((-100, random.randint(0, size[1]))))
@@ -44,15 +40,35 @@ class Game(GameObject):
             self.groups["enemies"].add(
                 Enemy((random.randint(0, size[0]), size[1] + 100)))
 
+    def __enemies_follow_player(self):
         for player in self.groups["player"].sprites():
             for enemy in self.groups["enemies"].sprites():
                 enemy.direction = player.pos - enemy.pos
                 enemy.direction = enemy.direction.normalize()
 
+    def __projetile_enemy_collision(self):
         for player in self.groups["player"].sprites():
-            pygame.sprite.groupcollide(
-                player.groups["projectiles"], self.groups["enemies"], True, True)
+            collisions = pygame.sprite.groupcollide(
+                player.groups["projectiles"], self.groups["enemies"], False, False)
+            for sprite1, sprites2 in collisions.items():
+                sprite1.destroy()
+                for sprite2 in sprites2:
+                    sprite2.destroy()
 
-        pygame.sprite.groupcollide(
-            self.groups["player"], self.groups["enemies"], True, False,
+    def __player_enemy_collision(self):
+        collisions = pygame.sprite.groupcollide(
+            self.groups["player"], self.groups["enemies"], False, False,
             collided=pygame.sprite.collide_circle)
+        for sprite1, _ in collisions.items():
+            sprite1.destroy()
+
+    def update(self, dt):
+        # Event handling
+        if pygame.event.get(pygame.QUIT):
+            pygame.quit()
+            sys.exit(0)
+
+        self.__spawn_enemies()
+        self.__enemies_follow_player()
+        self.__projetile_enemy_collision()
+        self.__player_enemy_collision()

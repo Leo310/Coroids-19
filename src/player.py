@@ -8,7 +8,7 @@ from projectile import Projectile
 class Player(GameObject):
     def __init__(self, pos):
         super().__init__(pos, PlayerConfig.SPEED.value,
-                         "assets/t_cell.png", (100, 100))
+                         ["assets/t_cell.png"], (100, 100))
 
         self.groups["projectiles"] = pygame.sprite.Group()
 

@@ -7,7 +7,7 @@ from gameobject import GameObject
 class Projectile(GameObject):
     def __init__(self, pos, direction):
         super().__init__(pos, ProjectileConfig.SPEED.value,
-                         "assets/antibody.png", (60, 38))
+                         ["assets/antibody.png"], (60, 38))
         self.direction = direction
         self.image = pygame.transform.rotate(
             self._og_image, self.direction.angle_to(pygame.Vector2(0, 1)) - 90)
