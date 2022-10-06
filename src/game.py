@@ -51,23 +51,24 @@ class Game(GameObject):
             collisions = pygame.sprite.groupcollide(
                 player.groups["projectiles"], self.groups["enemies"], False, False)
             for sprite1, sprites2 in collisions.items():
-                sprite1.destroy()
+                sprite1.hit()
                 for sprite2 in sprites2:
-                    sprite2.destroy()
+                    sprite2.hit()
 
     def __player_enemy_collision(self):
         collisions = pygame.sprite.groupcollide(
             self.groups["player"], self.groups["enemies"], False, False,
             collided=pygame.sprite.collide_circle)
         for sprite1, _ in collisions.items():
-            sprite1.destroy()
+            sprite1.hit()
 
-    def update(self, dt):
-        # Event handling
+    def __handle_events(self):
         if pygame.event.get(pygame.QUIT):
             pygame.quit()
             sys.exit(0)
 
+    def update(self, dt):
+        self.__handle_events()
         self.__spawn_enemies()
         self.__enemies_follow_player()
         self.__projetile_enemy_collision()

@@ -35,7 +35,7 @@ class GameObject(pygame.sprite.Sprite):
             self._og_image, self._total_angle)
         self.rect = self.image.get_rect(center=self.rect.center)
 
-    def destroy(self):
+    def hit(self):
         self.kill()
 
     def get_groups(self):

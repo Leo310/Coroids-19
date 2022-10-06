@@ -7,8 +7,9 @@ from projectile import Projectile
 
 class Player(GameObject):
     def __init__(self, pos):
+        self.__size = PlayerConfig.SIZE.value
         super().__init__(pos, PlayerConfig.SPEED.value,
-                         ["assets/t_cell.png"], (100, 100))
+                         ["assets/t_cell.png"], self.__size)
 
         self.groups["projectiles"] = pygame.sprite.Group()
 
@@ -28,7 +29,21 @@ class Player(GameObject):
         self.groups["projectiles"].add(Projectile(
             self.rect.center, shoot_direction))
 
-    def update(self, dt):
+    def __out_of_bounds(self):
+        # Player out of bounds logic
+        display_info = pygame.display.Info()
+        width = display_info.current_w
+        height = display_info.current_h
+        if self.pos.x < 0:
+            self.pos.x = width
+        elif self.pos.x > width:
+            self.pos.x = 0
+        if self.pos.y < 0:
+            self.pos.y = height
+        elif self.pos.y > height:
+            self.pos.y = 0
+
+    def __handle_events(self, dt):
         for event in pygame.event.get(pygame.KEYDOWN):
             if event.key == pygame.K_SPACE:
                 # p1.shoot(pygame.mouse.get_pos()) # shoots to mouse pos
@@ -51,20 +66,6 @@ class Player(GameObject):
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             self.move(self.vel * dt)
 
-            # Projectile out of bounds logic
-        for projectile in self.groups["projectiles"].sprites():
-            if projectile.out_of_bounds():
-                projectile.kill()
-
-        # Player out of bounds logic
-        display_info = pygame.display.Info()
-        width = display_info.current_w
-        height = display_info.current_h
-        if self.pos.x < 0:
-            self.pos.x = width
-        elif self.pos.x > width:
-            self.pos.x = 0
-        if self.pos.y < 0:
-            self.pos.y = height
-        elif self.pos.y > height:
-            self.pos.y = 0
+    def update(self, dt):
+        self.__handle_events(dt)
+        self.__out_of_bounds()
