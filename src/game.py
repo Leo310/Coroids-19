@@ -29,19 +29,17 @@ class Game(GameObject):
 
     def __spawn_enemy(self, side):
         size = GameConfig.SIZE.value
+        enemy = None
         match side:
             case 0:  # left
-                self.groups["enemies"].add(
-                    Enemy((-100, random.randint(0, size[1]))))
+                enemy = Enemy((-100, random.randint(0, size[1])))
             case 1:  # top
-                self.groups["enemies"].add(
-                    Enemy((random.randint(0, size[0]), -100)))
+                enemy = Enemy((random.randint(0, size[0]), -100))
             case 2:  # right
-                self.groups["enemies"].add(
-                    Enemy((size[0]+100, random.randint(0, size[1]))))
+                enemy = Enemy((size[0]+100, random.randint(0, size[1])))
             case 3:  # bottom
-                self.groups["enemies"].add(
-                    Enemy((random.randint(0, size[0]), size[1] + 100)))
+                enemy = Enemy((random.randint(0, size[0]), size[1] + 100))
+        self.groups["enemies"].add(enemy)
 
     def __spawn_enemies(self):
         enemy_count = len(self.groups["enemies"])
