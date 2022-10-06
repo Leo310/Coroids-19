@@ -28,7 +28,6 @@ class Animation():
             self.__image = self.__images[self.__img_index]
             self.__img_index += 1
             if self.__img_index == len(self.__images):
-                print(self.playing)
                 self.__img_index = 0
                 self.playing = False
                 self.__on_finish()
