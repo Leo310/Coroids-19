@@ -27,30 +27,33 @@ class Game(GameObject):
         self.__last_enemy_kill_time = 0
         self.__last_enemy_count = 0
 
-    def __spawn_enemies(self):
+    def __spawn_enemy(self, side):
         size = GameConfig.SIZE.value
+        match side:
+            case 0:  # left
+                self.groups["enemies"].add(
+                    Enemy((-100, random.randint(0, size[1]))))
+            case 1:  # top
+                self.groups["enemies"].add(
+                    Enemy((random.randint(0, size[0]), -100)))
+            case 2:  # right
+                self.groups["enemies"].add(
+                    Enemy((size[0]+100, random.randint(0, size[1]))))
+            case 3:  # bottom
+                self.groups["enemies"].add(
+                    Enemy((random.randint(0, size[0]), size[1] + 100)))
+
+    def __spawn_enemies(self):
         enemy_count = len(self.groups["enemies"])
         if self.__last_enemy_count != enemy_count:
             self.__last_enemy_kill_time = time.time()
         self.__last_enemy_count = enemy_count
 
         if time.time() - self.__last_enemy_kill_time >= 3:
-            self.groups["enemies"].add(
-                Enemy((-100, random.randint(0, size[1]))))
+            self.__spawn_enemy(random.randint(0, 3))
 
         if enemy_count < 8:
-            # left
-            self.groups["enemies"].add(
-                Enemy((-100, random.randint(0, size[1]))))
-            # top
-            self.groups["enemies"].add(
-                Enemy((random.randint(0, size[0]), -100)))
-            # right
-            self.groups["enemies"].add(
-                Enemy((size[0]+100, random.randint(0, size[1]))))
-            # bottom
-            self.groups["enemies"].add(
-                Enemy((random.randint(0, size[0]), size[1] + 100)))
+            self.__spawn_enemy(random.randint(0, 3))
 
     def __enemies_follow_player(self):
         for player in self.groups["player"].sprites():
