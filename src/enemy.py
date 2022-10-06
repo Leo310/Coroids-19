@@ -18,22 +18,23 @@ class Enemy(GameObject):
         self._layer = 15
         self.radius = 80/2
 
-        self.hit_count = 0
+        self.health = 3
         self.__death_anim = Animation(
             500, ["assets/big_corona.png",
                   "assets/medium_corona.png",
                   "assets/small_corona.png"], self.__size)
 
     def hit(self):
-        self.hit_count += 1
-        if self.hit_count == 1:
-            self.image = self._images[1]
-            self.radius = 70/2
-        elif self.hit_count == 2:
-            self.image = self._images[2]
-            self.radius = 60/2
-        elif self.hit_count >= 3:
-            self.__death_anim.start(self.kill)
+        self.health -= 1
+        match self.health:
+            case 2:
+                self.image = self._images[1]
+                self.radius = 70/2
+            case 1:
+                self.image = self._images[2]
+                self.radius = 60/2
+            case 0:
+                self.__death_anim.start(self.kill)
 
     def update(self, dt):
         self.move(70*dt)

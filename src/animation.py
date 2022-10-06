@@ -4,10 +4,11 @@ import pygame
 
 class Animation():
     def __init__(self, duration, image_paths, image_size):
+        self.playing = False
+
         self.__images = []
         self.__duration = duration / 1000
         self.__img_index = 0
-        self.playing = False
         self.__last_time = 0
         self.__on_finish = None
         self.__image = None
