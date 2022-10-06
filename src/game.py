@@ -1,5 +1,6 @@
 import sys
 import random
+import time
 
 import pygame
 
@@ -21,12 +22,23 @@ class Game(GameObject):
 
         self.groups["enemies"] = pygame.sprite.Group()
         self.groups["player"] = pygame.sprite.Group()
-
         self.groups["player"].add(Player(middle_pos))
+
+        self.__last_enemy_kill_time = 0
+        self.__last_enemy_count = 0
 
     def __spawn_enemies(self):
         size = GameConfig.SIZE.value
-        if len(self.groups["enemies"]) < 8:
+        enemy_count = len(self.groups["enemies"])
+        if self.__last_enemy_count != enemy_count:
+            self.__last_enemy_kill_time = time.time()
+        self.__last_enemy_count = enemy_count
+
+        if time.time() - self.__last_enemy_kill_time >= 3:
+            self.groups["enemies"].add(
+                Enemy((-100, random.randint(0, size[1]))))
+
+        if enemy_count < 8:
             # left
             self.groups["enemies"].add(
                 Enemy((-100, random.randint(0, size[1]))))
