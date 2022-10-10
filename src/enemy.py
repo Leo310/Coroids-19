@@ -55,12 +55,12 @@ class Enemy(GameObject):
         match self.health:
             case 4:
                 def medium_stats():
-                    self.vel = 90
+                    self.vel = 100
                     self.image = self._images[self.health-1]
                 self.__big_to_medium.start(medium_stats)
             case 1:
                 def small_stats():
-                    self.vel = 120
+                    self.vel = 140
                     self.image = self._images[self.health-1]
                 self.__medium_to_small.start(small_stats)
             case 0:
