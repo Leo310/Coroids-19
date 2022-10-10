@@ -31,14 +31,14 @@ class Game(GameObject):
         size = GameConfig.SIZE.value
         enemy = None
         match side:
-            case 0:  # left
-                enemy = Enemy((-100, random.randint(0, size[1])))
+            case 0:  # bottom
+                enemy = Enemy((random.randint(0, size[0]), size[1] + 100))
             case 1:  # top
                 enemy = Enemy((random.randint(0, size[0]), -100))
             case 2:  # right
-                enemy = Enemy((size[0]+100, random.randint(0, size[1])))
-            case 3:  # bottom
-                enemy = Enemy((random.randint(0, size[0]), size[1] + 100))
+                enemy = Enemy((size[0]+100, random.randint(100, size[1]-100)))
+            case 3:  # left
+                enemy = Enemy((-100, random.randint(100, size[1]-100)))
         self.groups["enemies"].add(enemy)
 
     def __spawn_enemies(self):
@@ -48,10 +48,10 @@ class Game(GameObject):
         self.__last_enemy_count = enemy_count
 
         if time.time() - self.__last_enemy_kill_time >= 3:
-            self.__spawn_enemy(random.randint(0, 3))
+            self.__spawn_enemy(random.randint(2, 3))
 
         if enemy_count < 8:
-            self.__spawn_enemy(random.randint(0, 3))
+            self.__spawn_enemy(random.randint(2, 3))
 
     def __enemies_follow_player(self):
         for player in self.groups["player"].sprites():

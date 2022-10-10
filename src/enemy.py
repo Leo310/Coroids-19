@@ -11,33 +11,64 @@ class Enemy(GameObject):
         self.__size = EnemyConfig.SIZE.value
         super().__init__(pos,
                          images_path=[
-                             "assets/big_corona.png",
-                             "assets/medium_corona.png",
-                             "assets/small_corona.png"],
+                             "assets/small/small_0.png",
+                             "assets/medium/medium_2.png",
+                             "assets/medium/medium_1.png",
+                             "assets/medium/medium_0.png",
+                             "assets/big/big_2.png",
+                             "assets/big/big_1.png",
+                             "assets/big/big_0.png"
+                         ],
                          image_size=self.__size)
         self._layer = 15
         self.radius = 80/2
 
-        self.health = 3
+        self.vel = 60
+        self.health = 7
+        self.image = self._images[self.health-1]
+
+        self.__big_to_medium = Animation(
+            400, [
+                "assets/big_to_medium/big_to_med.png",
+                "assets/big_to_medium/big_to_med_0.png",
+                "assets/big_to_medium/big_to_med_1.png",
+                "assets/big_to_medium/big_to_med_2.png"
+            ], self.__size)
+        self.__medium_to_small = Animation(
+            400, [
+                "assets/medium_to_small/med_to_small.png",
+                "assets/medium_to_small/med_to_small_0.png",
+                "assets/medium_to_small/med_to_small_1.png",
+                "assets/medium_to_small/med_to_small_2.png"
+            ], self.__size)
         self.__death_anim = Animation(
-            500, ["assets/big_corona.png",
-                  "assets/medium_corona.png",
-                  "assets/small_corona.png"], self.__size)
+            400, ["assets/destroy/destroy_0.png",
+                  "assets/destroy/destroy_1.png",
+                  "assets/destroy/destroy_2.png"], self.__size)
+
+        self.__animations = [self.__big_to_medium,
+                             self.__medium_to_small, self.__death_anim]
 
     def hit(self):
         self.health -= 1
+        self.image = self._images[self.health-1]
         match self.health:
-            case 2:
-                self.image = self._images[1]
-                self.radius = 70/2
+            case 4:
+                def medium_stats():
+                    self.vel = 90
+                    self.image = self._images[self.health-1]
+                self.__big_to_medium.start(medium_stats)
             case 1:
-                self.image = self._images[2]
-                self.radius = 60/2
+                def small_stats():
+                    self.vel = 120
+                    self.image = self._images[self.health-1]
+                self.__medium_to_small.start(small_stats)
             case 0:
                 self.__death_anim.start(self.kill)
 
     def update(self, dt):
-        self.move(70*dt)
+        self.move(self.vel*dt)
 
-        if self.__death_anim.playing:
-            self.image = self.__death_anim.update()
+        for animation in self.__animations:
+            if animation.playing:
+                self.image = animation.update()

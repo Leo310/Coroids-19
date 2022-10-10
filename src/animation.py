@@ -19,7 +19,7 @@ class Animation():
                 image.convert_alpha(), image_size)
             self.__images.append(image)
 
-    def start(self, on_finish):
+    def start(self, on_finish=None):
         self.playing = True
         self.__on_finish = on_finish
 
