@@ -1,4 +1,4 @@
-# import pygame
+import pygame
 
 # from config import EnemiesConfig
 from gameobject import GameObject
@@ -27,6 +27,14 @@ class Enemy(GameObject):
         self.health = 7
         self.image = self._images[self.health-1]
 
+        # Sounds
+        self.__hit_sound = pygame.mixer.Sound("assets/sounds/hit.wav")
+        self.__death_sound = pygame.mixer.Sound(
+            "assets/sounds/coroid_death.wav")
+        self.__downgrade_sound = pygame.mixer.Sound(
+            "assets/sounds/downgrade_coroid.wav")
+
+        # Animations
         self.__big_to_medium = Animation(
             400, [
                 "assets/big_to_medium/big_to_med.png",
@@ -50,6 +58,7 @@ class Enemy(GameObject):
                              self.__medium_to_small, self.__death_anim]
 
     def hit(self):
+        self.__hit_sound.play()
         self.health -= 1
         self.image = self._images[self.health-1]
         match self.health:
@@ -57,13 +66,16 @@ class Enemy(GameObject):
                 def medium_stats():
                     self.vel = 100
                     self.image = self._images[self.health-1]
+                # self.__downgrade_sound.play()
                 self.__big_to_medium.start(medium_stats)
             case 1:
                 def small_stats():
                     self.vel = 140
                     self.image = self._images[self.health-1]
+                # self.__downgrade_sound.play()
                 self.__medium_to_small.start(small_stats)
             case 0:
+                self.__death_sound.play()
                 self.__death_anim.start(self.kill)
 
     def update(self, dt):

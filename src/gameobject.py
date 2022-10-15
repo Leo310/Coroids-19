@@ -24,6 +24,10 @@ class GameObject(pygame.sprite.Sprite):
         self._og_image = self.image
         self._total_angle = 0
 
+    def set_image(self, image):
+        self._og_image = image
+        self.image = image
+
     def move(self, velocity):
         self.pos += self.direction * velocity
         self.rect.center = self.pos

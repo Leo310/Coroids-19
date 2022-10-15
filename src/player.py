@@ -1,3 +1,4 @@
+import time
 import pygame
 
 from config import PlayerConfig
@@ -9,15 +10,28 @@ class Player(GameObject):
     def __init__(self, pos):
         self.__size = PlayerConfig.SIZE.value
         super().__init__(pos, PlayerConfig.SPEED.value,
-                         ["assets/t_cell.png"], self.__size)
+                         [
+                             "assets/player/player_death_2.png",
+                             "assets/player/player_death_1.png",
+                             "assets/player/player_death_0.png",
+                             "assets/player/player.png"
+                         ], self.__size)
 
         self.groups["projectiles"] = pygame.sprite.Group()
 
         self._layer = 10
         self.radius = 80/2
 
+        self.health = 4
+        self.set_image(self._images[self.health-1])
+
+        self.__last_hit_time = 0
         self.__rotation_speed = PlayerConfig.ROTATION_SPEED.value
-        self.__piu = pygame.mixer.Sound("assets/piu.mp3")
+
+        # Sounds
+        self.__piu = pygame.mixer.Sound("assets/sounds/piu.wav")
+        self.__death_sound = pygame.mixer.Sound(
+            "assets/sounds/player_death.wav")
 
     def shoot(self, target=None):
         self.__piu.play()
@@ -28,6 +42,17 @@ class Player(GameObject):
             shoot_direction = self.direction
         self.groups["projectiles"].add(Projectile(
             self.rect.center, shoot_direction))
+
+    def hit(self):
+        if time.time() - self.__last_hit_time > 1.5:
+            self.health -= 1
+            self.radius -= 10
+            if self.health == 0:
+                self.kill()
+                self.__death_sound.play()
+                return
+            self.set_image(self._images[self.health-1])
+            self.__last_hit_time = time.time()
 
     def __out_of_bounds(self):
         # Player out of bounds logic
