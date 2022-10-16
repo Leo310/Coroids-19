@@ -9,7 +9,6 @@ class Animation():
         self.__images = []
         self.__duration = duration / 1000
         self.__img_index = 0
-        self.__last_time = 0
         self.__on_finish = None
         self.__image = None
 
@@ -18,6 +17,9 @@ class Animation():
             image = pygame.transform.smoothscale(
                 image.convert_alpha(), image_size)
             self.__images.append(image)
+
+        # so that Animation directly starts at 0 and not after first time fraction
+        self.__last_time = -self.__duration / len(self.__images)
 
     def start(self, on_finish=None):
         self.playing = True
@@ -31,6 +33,7 @@ class Animation():
             if self.__img_index == len(self.__images):
                 self.__img_index = 0
                 self.playing = False
-                self.__on_finish()
+                if self.__on_finish:
+                    self.__on_finish()
             self.__last_time = time.time()
         return self.__image

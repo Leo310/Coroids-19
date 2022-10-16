@@ -26,7 +26,8 @@ class GameObject(pygame.sprite.Sprite):
 
     def set_image(self, image):
         self._og_image = image
-        self.image = image
+        self.image = pygame.transform.rotate(
+            self._og_image, self._total_angle)
 
     def move(self, velocity):
         self.pos += self.direction * velocity
