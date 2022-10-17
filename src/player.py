@@ -16,9 +16,8 @@ class Player(GameObject):
                              "assets/player/player_death_0.png",
                              "assets/player/player.png"
                          ], self.__size)
-
         self.groups["projectiles"] = pygame.sprite.Group()
-
+        
         self._layer = 10
         self.radius = 80/2
 
@@ -47,10 +46,11 @@ class Player(GameObject):
         if time.time() - self.__last_hit_time > 1.5:
             self.health -= 1
             self.radius -= 10
+            
             if self.health == 0:
                 self.kill()
                 self.__death_sound.play()
-                return
+                return         
             self.set_image(self._images[self.health-1])
             self.__last_hit_time = time.time()
 
