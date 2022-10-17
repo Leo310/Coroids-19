@@ -1,23 +1,39 @@
 import time
 import pygame
 
+from animation import Animation
 from config import PlayerConfig
 from gameobject import GameObject
 from projectile import Projectile
+from healthbar import Healthbar
 
 
 class Player(GameObject):
     def __init__(self, pos):
         self.__size = PlayerConfig.SIZE.value
-        super().__init__(pos, PlayerConfig.SPEED.value,
-                         [
-                             "assets/player/player_death_2.png",
-                             "assets/player/player_death_1.png",
-                             "assets/player/player_death_0.png",
-                             "assets/player/player.png"
-                         ], self.__size)
+        self.__image_paths = [
+            "assets/player/player_death_2.png",
+            "assets/player/player_death_1.png",
+            "assets/player/player_death_0.png",
+            "assets/player/player.png"
+        ]
+        super().__init__(pos, PlayerConfig.SPEED.value, self.__image_paths, self.__size)
+
         self.groups["projectiles"] = pygame.sprite.Group()
-        
+
+        self.__image_paths = [
+            "assets/player/player_death_2.png",
+            "assets/player/player_death_1.png",
+            "assets/player/player_death_0.png",
+            "assets/player/player.png"
+        ]
+        super().__init__(pos, PlayerConfig.SPEED.value, self.__image_paths, self.__size)
+
+        self.groups["projectiles"] = pygame.sprite.Group()
+        self.groups["healthbar"] = pygame.sprite.Group()
+        self.__healthbar = Healthbar(4)
+        self.groups["healthbar"].add(self.__healthbar)
+
         self._layer = 10
         self.radius = 80/2
 
@@ -27,13 +43,21 @@ class Player(GameObject):
         self.__last_hit_time = 0
         self.__rotation_speed = PlayerConfig.ROTATION_SPEED.value
 
+        self.__hit_image_paths = [
+            "assets/player/player_death_2_hit.png",
+            "assets/player/player_death_1_hit.png",
+            "assets/player/player_death_0_hit.png",
+            "assets/player/player_hit.png"
+        ]
+
         # Sounds
         self.__piu = pygame.mixer.Sound("assets/sounds/piu.wav")
         self.__death_sound = pygame.mixer.Sound(
             "assets/sounds/player_death.wav")
 
+        self.__animations = []
+
     def shoot(self, target=None):
-        self.__piu.play()
         if target:
             shoot_direction = pygame.Vector2(target) - self.pos
             shoot_direction = shoot_direction.normalize()
@@ -43,14 +67,23 @@ class Player(GameObject):
             self.rect.center, shoot_direction))
 
     def hit(self):
-        if time.time() - self.__last_hit_time > 1.5:
+        if time.time() - self.__last_hit_time > PlayerConfig.IMMUNITY.value:
             self.health -= 1
+            self.__piu.play()
+            hit_anim = Animation(
+                PlayerConfig.IMMUNITY.value, [self.__hit_image_paths[self.health-1],
+                                              self.__image_paths[self.health-1]], self.__size)
+            self.__animations.append(hit_anim)
+            hit_anim.start()
+
+            self.__healthbar.health -= 1
+
             self.radius -= 10
-            
+
             if self.health == 0:
                 self.kill()
                 self.__death_sound.play()
-                return         
+                return
             self.set_image(self._images[self.health-1])
             self.__last_hit_time = time.time()
 
@@ -94,3 +127,7 @@ class Player(GameObject):
     def update(self, dt):
         self.__handle_events(dt)
         self.__out_of_bounds()
+
+        for animation in self.__animations:
+            if animation.playing:
+                self.set_image(animation.update())

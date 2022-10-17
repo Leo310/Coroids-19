@@ -11,10 +11,12 @@ from enemy import Enemy
 
 
 class Game(GameObject):
-    def __init__(self):
+    def __init__(self, screen):
         size = GameConfig.SIZE.value
         super().__init__(image_size=size,
-                         images_path=["assets/background.png"])
+                         image_paths=["assets/background.png"])
+
+        self.__screen = screen
         self._layer = 0
         # setting game to middle pos because image need to be renderd in top right
         middle_pos = (size[0]/2, size[1]/2)
@@ -86,3 +88,27 @@ class Game(GameObject):
         self.__enemies_follow_player()
         self.__projetile_enemy_collision()
         self.__player_enemy_collision()
+
+    def loop(self):
+
+        clock = pygame.time.Clock()
+        root_group = pygame.sprite.LayeredUpdates()
+        root_group.add(self)
+
+        pygame.display.set_caption("Coroids-19")
+
+        while True:
+            dt = clock.tick() / 1000
+            self.__screen.fill((0, 0, 0))  # Clear the screen each frame.
+
+            for group in self.get_groups():
+                root_group.add(group.sprites())
+
+            root_group.update(dt)
+            root_group.draw(self.__screen)
+
+            if not self.groups["player"]:
+                # player dead
+                return
+
+            pygame.display.flip()

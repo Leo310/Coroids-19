@@ -9,6 +9,7 @@ class PlayerConfig(Enum):
     SPEED = 300
     ROTATION_SPEED = 200
     SIZE = (100, 100)
+    IMMUNITY = 1.5
 
 
 class ProjectileConfig(Enum):

@@ -4,10 +4,10 @@ import pygame
 
 class GameObject(pygame.sprite.Sprite):
     def __init__(self, pos=(0, 0), velocity=0,
-                 images_path=[], image_size=(0, 0)):
+                 image_paths=[], image_size=(0, 0)):
         super().__init__()
         self._images = []
-        for image_path in images_path:
+        for image_path in image_paths:
             image = pygame.image.load(image_path)
             image = pygame.transform.smoothscale(
                 image.convert_alpha(), image_size)

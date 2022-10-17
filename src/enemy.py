@@ -19,7 +19,7 @@ class Enemy(GameObject):
             "assets/big/big_0.png"
         ]
         super().__init__(pos,
-                         images_path=self.__image_paths,
+                         image_paths=self.__image_paths,
                          image_size=self.__size)
         self._layer = 15
         self.radius = 80/2
@@ -47,21 +47,21 @@ class Enemy(GameObject):
 
         # Animations
         self.__big_to_medium = Animation(
-            400, [
+            0.4, [
                 "assets/big_to_medium/big_to_med.png",
                 "assets/big_to_medium/big_to_med_0.png",
                 "assets/big_to_medium/big_to_med_1.png",
                 "assets/big_to_medium/big_to_med_2.png"
             ], self.__size)
         self.__medium_to_small = Animation(
-            400, [
+            0.4, [
                 "assets/medium_to_small/med_to_small.png",
                 "assets/medium_to_small/med_to_small_0.png",
                 "assets/medium_to_small/med_to_small_1.png",
                 "assets/medium_to_small/med_to_small_2.png"
             ], self.__size)
         self.__death_anim = Animation(
-            400, ["assets/destroy/destroy_0.png",
+            0.4, ["assets/destroy/destroy_0.png",
                   "assets/destroy/destroy_1.png",
                   "assets/destroy/destroy_2.png"], self.__size)
 
@@ -72,12 +72,14 @@ class Enemy(GameObject):
         self.__hit_sound.play()
         self.health -= 1
 
-        player_hit_anim = Animation(
-            200, [self.__hit_image_paths[self.health-1],
+        hit_anim = Animation(
+            0.2, [self.__hit_image_paths[self.health-1],
                   self.__image_paths[self.health-1]], self.__size)
-        self.__animations.append(player_hit_anim)
+        self.__animations.append(hit_anim)
 
-        player_hit_anim.start()
+        def del_anim():
+            self.__animations.remove(hit_anim)
+        hit_anim.start(del_anim)
 
         match self.health:
             case 4:

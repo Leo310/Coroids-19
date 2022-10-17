@@ -7,7 +7,7 @@ class Animation():
         self.playing = False
 
         self.__images = []
-        self.__duration = duration / 1000
+        self.__duration = duration
         self.__img_index = 0
         self.__on_finish = None
         self.__image = None
