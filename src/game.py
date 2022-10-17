@@ -28,6 +28,7 @@ class Game(GameObject):
 
         self.__last_enemy_kill_time = 0
         self.__last_enemy_count = 0
+        self.__enemy_count_diff = 0
 
     def __spawn_enemy(self, side):
         size = GameConfig.SIZE.value
@@ -45,6 +46,7 @@ class Game(GameObject):
 
     def __spawn_enemies(self):
         enemy_count = len(self.groups["enemies"])
+        self.__enemy_count_diff = enemy_count - self.__last_enemy_count
         if self.__last_enemy_count != enemy_count:
             self.__last_enemy_kill_time = time.time()
         self.__last_enemy_count = enemy_count
@@ -77,6 +79,11 @@ class Game(GameObject):
         for sprite1, _ in collisions.items():
             sprite1.hit()
 
+    def __evaluate_player_score(self):
+        for player in self.groups["player"].sprites():
+            if self.__enemy_count_diff < 0:
+                player.score += -self.__enemy_count_diff
+
     def __handle_events(self):
         if pygame.event.get(pygame.QUIT):
             pygame.quit()
@@ -88,6 +95,7 @@ class Game(GameObject):
         self.__enemies_follow_player()
         self.__projetile_enemy_collision()
         self.__player_enemy_collision()
+        self.__evaluate_player_score()
 
     def loop(self):
 

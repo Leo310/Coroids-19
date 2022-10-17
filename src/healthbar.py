@@ -1,9 +1,11 @@
 from gameobject import GameObject
+from config import GameConfig
 
 
 class Healthbar(GameObject):
     def __init__(self, health):
-        super().__init__((60, 580), image_paths=[
+        size = GameConfig.SIZE.value
+        super().__init__((60, size[1]-170), image_paths=[
             "assets/thermometer/dead.png",
             "assets/thermometer/40_deg.png",
             "assets/thermometer/39_deg.png",

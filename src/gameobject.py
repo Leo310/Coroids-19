@@ -13,15 +13,17 @@ class GameObject(pygame.sprite.Sprite):
                 image.convert_alpha(), image_size)
             self._images.append(image)
 
-        self.image = self._images[0]
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
+        if self._images:
+            self.image = self._images[0]
+            self.rect = self.image.get_rect()
+            self.rect.center = pos
+            self._og_image = self.image
+
         self.groups = {}
         self.direction = pygame.Vector2(0, 1)
         self.pos = pygame.Vector2(pos)
         self.vel = velocity
 
-        self._og_image = self.image
         self._total_angle = 0
 
     def set_image(self, image):

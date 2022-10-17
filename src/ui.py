@@ -14,23 +14,22 @@ class UI:
         self.__background_img = image
         self.__screen = screen
 
-    @ staticmethod
-    def get_font(size):  # Returns Press-Start-2P in the desired size
-        return pygame.font.Font("assets/menu/font.ttf", size)
+        self.__med_font = pygame.font.Font("assets/menu/font.ttf", 75)
+        self.__big_font = pygame.font.Font("assets/menu/font.ttf", 100)
 
     def main_menu_loop(self):
         pygame.display.set_caption("Menu")
 
         play_button = Button(image=pygame.image.load("assets/menu/Play Rect.png"),
                              pos=(640, 250),
-                             text_input="PLAY", font=UI.get_font(75), base_color="#d7fcd4",
+                             text_input="PLAY", font=self.__med_font, base_color="#d7fcd4",
                              hovering_color="White")
         quit_button = Button(image=pygame.image.load("assets/menu/Quit Rect.png"),
                              pos=(640, 400),
-                             text_input="QUIT", font=UI.get_font(75), base_color="#d7fcd4",
+                             text_input="QUIT", font=self.__med_font, base_color="#d7fcd4",
                              hovering_color="White")
 
-        menu_text = UI.get_font(100).render("Coroids-19", True, "#b68f40")
+        menu_text = self.__big_font.render("Coroids-19", True, "#b68f40")
         menu_rect = menu_text.get_rect(center=(640, 100))
 
         while True:
@@ -60,14 +59,14 @@ class UI:
 
         back_button = Button(image=pygame.image.load("assets/menu/Death Rect.png"),
                              pos=(640, 250),
-                             text_input="Back to Menu", font=UI.get_font(75),
+                             text_input="Back to Menu", font=self.__med_font,
                              base_color="#d7fcd4", hovering_color="White")
         quit_button = Button(image=pygame.image.load("assets/menu/Quit Rect.png"),
                              pos=(640, 400),
-                             text_input="QUIT", font=UI.get_font(75),
+                             text_input="QUIT", font=self.__med_font,
                              base_color="#d7fcd4", hovering_color="White")
 
-        death_text = UI.get_font(100).render(
+        death_text = self.__big_font.render(
             "YOU DIED!!!", True, "#b68f40")
         death_rect = death_text.get_rect(center=(640, 100))
 
