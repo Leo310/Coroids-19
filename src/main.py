@@ -13,6 +13,9 @@ def main():
 
     pygame.init()
     screen = pygame.display.set_mode(GameConfig.SIZE.value)
+    pygame.mixer.music.load("assets/sounds/background.mp3")
+    pygame.mixer.music.set_volume(0.6)
+    pygame.mixer.music.play(-1)
 
     ui = UI(screen)
     while True:

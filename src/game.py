@@ -26,23 +26,13 @@ class Game(GameObject):
         self.groups["player"] = pygame.sprite.Group()
         self.groups["player"].add(Player(middle_pos))
 
+        self.__player_killed_enemy = False
+
         self.__last_enemy_kill_time = 0
         self.__last_enemy_count = 0
         self.__enemy_count_diff = 0
-
-    def __spawn_enemy(self, side):
-        size = GameConfig.SIZE.value
-        enemy = None
-        match side:
-            case 0:  # bottom
-                enemy = Enemy((random.randint(0, size[0]), size[1] + 100))
-            case 1:  # top
-                enemy = Enemy((random.randint(0, size[0]), -100))
-            case 2:  # right
-                enemy = Enemy((size[0]+100, random.randint(100, size[1]-100)))
-            case 3:  # left
-                enemy = Enemy((-100, random.randint(100, size[1]-100)))
-        self.groups["enemies"].add(enemy)
+        self.__last_enemy_upgrade = 0
+        self.__minimum_enemy_count = 8
 
     def __spawn_enemies(self):
         enemy_count = len(self.groups["enemies"])
@@ -51,11 +41,20 @@ class Game(GameObject):
             self.__last_enemy_kill_time = time.time()
         self.__last_enemy_count = enemy_count
 
-        if time.time() - self.__last_enemy_kill_time >= 3:
-            self.__spawn_enemy(random.randint(2, 3))
+        def __spawn_enemy(side):
+            size = GameConfig.SIZE.value
+            enemy = None
+            if side:
+                enemy = Enemy(
+                    (size[0]+100, random.randint(100, size[1]-100)))  # right
+            else:
+                enemy = Enemy((-100, random.randint(100, size[1]-100)))  # left
+            self.groups["enemies"].add(enemy)
 
-        if enemy_count < 8:
-            self.__spawn_enemy(random.randint(2, 3))
+        if time.time() - self.__last_enemy_kill_time >= 3:
+            self.__spawn_enemy(random.randint(0, 1))
+        if enemy_count < self.__minimum_enemy_count:
+            self.__spawn_enemy(random.randint(0, 1))
 
     def __enemies_follow_player(self):
         for player in self.groups["player"].sprites():
@@ -82,20 +81,32 @@ class Game(GameObject):
     def __evaluate_player_score(self):
         for player in self.groups["player"].sprites():
             if self.__enemy_count_diff < 0:
+                self.__player_killed_enemy = True
                 player.score += -self.__enemy_count_diff
 
-    def __handle_events(self):
+    def __handle_upgrades(self):
+        # player upgrades
+        for player in self.groups["player"].sprites():
+            if self.__player_killed_enemy and player.score % 3 == 0:
+                player.firerate += 1
+                self.__player_killed_enemy = False
+
+        # enemy upgrades
+        if time.time() - self.__last_enemy_upgrade > 6:
+            self.__minimum_enemy_count += 1
+            self.__last_enemy_upgrade = time.time()
+
+    def update(self, dt):
         if pygame.event.get(pygame.QUIT):
             pygame.quit()
             sys.exit(0)
 
-    def update(self, dt):
-        self.__handle_events()
         self.__spawn_enemies()
         self.__enemies_follow_player()
         self.__projetile_enemy_collision()
         self.__player_enemy_collision()
         self.__evaluate_player_score()
+        self.__handle_upgrades()
 
     def loop(self):
 

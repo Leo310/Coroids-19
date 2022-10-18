@@ -17,3 +17,18 @@ class Score(GameObject):
 
     def update(self, dt):
         self.image = self.__font.render(str(self.score), True, "#d7fcd4")
+
+
+class Highscore:
+    highscore = 0
+    score = 0
+    new_highscore = False
+
+    @staticmethod
+    def set(score):
+        Highscore.score = score
+        if score > Highscore.highscore:
+            Highscore.highscore = score
+            Highscore.new_highscore = True
+            return
+        Highscore.new_highscore = False

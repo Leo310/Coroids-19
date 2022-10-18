@@ -6,7 +6,7 @@ from config import PlayerConfig
 from gameobject import GameObject
 from projectile import Projectile
 from healthbar import Healthbar
-from score import Score
+from score import Score, Highscore
 
 
 class Player(GameObject):
@@ -32,6 +32,8 @@ class Player(GameObject):
         self.radius = 80/2
 
         self.score = 0
+        self.firerate = 2  # per second
+        self.__last_shoot_time = 0
 
         self.__health = 4
         self.set_image(self._images[self.__health-1])
@@ -53,14 +55,12 @@ class Player(GameObject):
 
         self.__animations = []
 
-    def shoot(self, target=None):
-        if target:
-            shoot_direction = pygame.Vector2(target) - self.pos
-            shoot_direction = shoot_direction.normalize()
-        else:
+    def shoot(self):
+        if time.time() - self.__last_shoot_time > 1/self.firerate:
             shoot_direction = self.direction
-        self.groups["projectiles"].add(Projectile(
-            self.rect.center, shoot_direction))
+            self.groups["projectiles"].add(Projectile(
+                self.rect.center, shoot_direction))
+            self.__last_shoot_time = time.time()
 
     def hit(self):
         if time.time() - self.__last_hit_time > PlayerConfig.IMMUNITY.value:
@@ -77,6 +77,7 @@ class Player(GameObject):
             self.radius -= 10
 
             if self.__health == 0:
+                Highscore.set(self.score)
                 self.kill()
                 self.__death_sound.play()
                 return
@@ -93,16 +94,14 @@ class Player(GameObject):
         elif self.pos.x > width:
             self.pos.x = 0
         if self.pos.y < 0:
-            self.pos.y = height
-        elif self.pos.y > height:
             self.pos.y = 0
+        elif self.pos.y > height:
+            self.pos.y = height
 
     def __handle_events(self, dt):
         for event in pygame.event.get(pygame.KEYDOWN):
-            if event.key == pygame.K_SPACE:
-                # p1.shoot(pygame.mouse.get_pos()) # shoots to mouse pos
-                # shoots in player direction
-                self.shoot()
+            # if event.key == pygame.K_SPACE:
+            #     self.shoot()
             if event.key == pygame.K_LSHIFT:
                 self.vel *= 2
 
@@ -119,6 +118,8 @@ class Player(GameObject):
             self.move(-self.vel * dt)
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             self.move(self.vel * dt)
+        if keys[pygame.K_SPACE]:
+            self.shoot()
 
     def update(self, dt):
         self.__handle_events(dt)
