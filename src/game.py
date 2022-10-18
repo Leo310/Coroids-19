@@ -52,9 +52,9 @@ class Game(GameObject):
             self.groups["enemies"].add(enemy)
 
         if time.time() - self.__last_enemy_kill_time >= 3:
-            self.__spawn_enemy(random.randint(0, 1))
+            __spawn_enemy(random.randint(0, 1))
         if enemy_count < self.__minimum_enemy_count:
-            self.__spawn_enemy(random.randint(0, 1))
+            __spawn_enemy(random.randint(0, 1))
 
     def __enemies_follow_player(self):
         for player in self.groups["player"].sprites():
