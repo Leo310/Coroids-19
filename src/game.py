@@ -8,11 +8,11 @@ from config import GameConfig
 from gameobject import GameObject
 from player import Player
 from enemy import Enemy
-from upgradebutton import Button
+from button import Button
 
 
 class Game(GameObject):
-    def __init__(self, screen):
+    def __init__(self, screen, difficulty):
         size = GameConfig.SIZE.value
         super().__init__(image_size=size,
                          image_paths=["assets/background.png"])
@@ -28,17 +28,32 @@ class Game(GameObject):
         self.groups["shop"] = pygame.sprite.Group()
         self.groups["player"].add(Player(middle_pos))
 
+        self.__difficulty = difficulty
+
         self.__upgrade_button_image_paths = [
-            "assets/menu/Main_Background.png",
-            "assets/menu/Main_Background.png",
-            "assets/menu/Main_Background.png"]
+            "assets/shop/speed.png",
+            "assets/shop/shooting_rate.png",
+            "assets/shop/shooting_direction_lvl_1.png",
+        ]
         self.__player_killed_enemy = False
 
         self.__last_enemy_kill_time = 0
         self.__last_enemy_count = 0
         self.__enemy_count_diff = 0
         self.__last_enemy_upgrade = 0
-        self.__minimum_enemy_count = 8
+        match self.__difficulty:
+            case 0:  # Hard
+                self.__minimum_enemy_count = 16
+                self.__minimum_enemy_increment = 3
+            case 1:
+                self.__minimum_enemy_count = 12
+                self.__minimum_enemy_increment = 2
+            case 2:
+                self.__minimum_enemy_count = 8
+                self.__minimum_enemy_increment = 1
+            case 3:  # Easy
+                self.__minimum_enemy_count = 4
+                self.__minimum_enemy_increment = 1
 
     def __spawn_enemies(self):
         enemy_count = len(self.groups["enemies"])
@@ -90,29 +105,37 @@ class Game(GameObject):
                 self.__player_killed_enemy = True
                 player.score += -self.__enemy_count_diff
 
+    def __create_shop(self, player, lvl):
+        if lvl == 2:
+            self.__upgrade_button_image_paths[2] = "assets/shop/shooting_direction_lvl_2.png"
+        upgrades = [player.speed_upgrade,
+                    player.firerate_upgrade, player.weapon_upgrade]
+        for i, upgrade in enumerate(upgrades):
+            def update_and_clear_all(upgrade_func=upgrade):
+                upgrade_func()
+                for button in self.groups["shop"].sprites():
+                    button.kill()
+            size = GameConfig.SIZE.value
+            self.groups["shop"].add(Button(
+                (size[0] - 110 * (i+1), size[1] - 100), (100, 100),
+                self.__upgrade_button_image_paths[i], None, None, update_and_clear_all))
+
     def __handle_upgrades(self):
         # player upgrades
         for player in self.groups["player"].sprites():
             if self.__player_killed_enemy:
                 if player.score % 5 == 0:
                     player.firerate += 1
-                if player.score in (1, 50):
-                    upgrades = [player.speed_upgrade,
-                                player.firerate_upgrade, player.weapon_upgrade]
-                    for i, upgrade in enumerate(upgrades):
-                        def update_and_clear_all(upgrade_func=upgrade):
-                            upgrade_func()
-                            for sprite in self.groups["shop"].sprites():
-                                sprite.kill()
-                        size = GameConfig.SIZE.value
-                        self.groups["shop"].add(Button(
-                            (size[0] - 110 * (i+1), size[1] - 100), (100, 100),
-                            self.__upgrade_button_image_paths[i], None, None, update_and_clear_all))
+                if player.score == 1:
+                    self.__create_shop(player, 1)
+                elif player.score == 5:
+                    self.__create_shop(player, 2)
             self.__player_killed_enemy = False
 
         # enemy upgrades
         if time.time() - self.__last_enemy_upgrade > 6:
-            self.__minimum_enemy_count += 1
+            self.__minimum_enemy_count += self.__minimum_enemy_increment
+
             self.__last_enemy_upgrade = time.time()
 
     def update(self, dt):

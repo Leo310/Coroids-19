@@ -1,33 +1,53 @@
-class Button():
-    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
-        self.image = image
-        self.x_pos = pos[0]
-        self.y_pos = pos[1]
-        self.font = font
-        self.base_color, self.hovering_color = base_color, hovering_color
-        self.text_input = text_input
-        self.text = self.font.render(self.text_input, True, self.base_color)
-        if self.image is None:
-            self.image = self.text
-        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-        self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+import time
+import pygame
 
-    def update(self, screen):
-        if self.image is not None:
-            screen.blit(self.image, self.rect)
-        screen.blit(self.text, self.text_rect)
+from gameobject import GameObject
 
-    def check_for_input(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) \
-                and position[1] in range(self.rect.top, self.rect.bottom):
-            return True
-        return False
 
-    def change_color(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) \
-                and position[1] in range(self.rect.top, self.rect.bottom):
-            self.text = self.font.render(
-                self.text_input, True, self.hovering_color)
-        else:
-            self.text = self.font.render(
-                self.text_input, True, self.base_color)
+class Button(GameObject):
+    def __init__(self, pos, size, image_path, font_size, text, func):
+        super().__init__(pos, image_paths=[
+            image_path,
+        ], image_size=size)
+        self._layer = 20
+        self.__callback = func
+
+        self.__color = "#d7fcd4"
+
+        if font_size:
+            self.font = pygame.font.Font("assets/menu/font.ttf", font_size)
+        self.text = text
+        self.__mouse_pressed = False
+
+        self.__mouse_hover = False
+        self.__mouse_clicked = False
+        self.clicked_time = 0
+
+    def update(self, dt):
+        mouse_pos = pygame.mouse.get_pos()
+
+        self.__mouse_hover = False
+        if mouse_pos[0] in range(self.rect.left, self.rect.right) \
+                and mouse_pos[1] in range(self.rect.top, self.rect.bottom):
+            self.__mouse_hover = True
+            if self.__mouse_pressed and not pygame.mouse.get_pressed()[0]\
+                    and time.time() - self.clicked_time < 0.1:
+                self.__mouse_clicked = True
+                self.__callback()
+
+        if self.text and self.font:
+            text_img = self.font.render(
+                self.text, True, self.__color)
+            text_pos = (self.rect.w/2-text_img.get_rect().w/2,
+                        self.rect.h/2-text_img.get_rect().h/2)
+            self.image.blit(text_img, text_pos)
+
+        if pygame.mouse.get_pressed()[0]:
+            self.clicked_time = time.time()
+            self.__mouse_pressed = True
+
+        self.__color = "#d7fcd4"
+        if self.__mouse_clicked:
+            self.__color = "#ff0000"
+        elif self.__mouse_hover:
+            self.__color = "#f0f000"

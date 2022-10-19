@@ -5,7 +5,8 @@ import pygame
 
 from config import GameConfig
 from game import Game
-from new_ui import UI
+from menu import Menu
+from death_screen import Deathscreen
 
 
 def main():
@@ -17,12 +18,15 @@ def main():
     pygame.mixer.music.set_volume(0.6)
     pygame.mixer.music.play(-1)
 
-    ui = UI(screen)
     while True:
-        ui.main_menu_loop()
-        game = Game(screen)
+        menu = Menu(screen)
+        difficulty = menu.loop()
+
+        game = Game(screen, difficulty)
         game.loop()
-        ui.death_screen_loop()
+
+        death_screen = Deathscreen(screen)
+        death_screen.loop()
 
 
 if __name__ == "__main__":
