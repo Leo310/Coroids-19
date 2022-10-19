@@ -5,7 +5,7 @@ import pygame
 
 from config import GameConfig
 from game import Game
-from ui import UI
+from new_ui import UI
 
 
 def main():

@@ -9,8 +9,9 @@ class GameObject(pygame.sprite.Sprite):
         self._images = []
         for image_path in image_paths:
             image = pygame.image.load(image_path)
-            image = pygame.transform.smoothscale(
-                image.convert_alpha(), image_size)
+            if image_size[0] and image_size[1]:
+                image = pygame.transform.smoothscale(
+                    image.convert_alpha(), image_size)
             self._images.append(image)
 
         if self._images:
@@ -44,6 +45,9 @@ class GameObject(pygame.sprite.Sprite):
 
     def hit(self):
         self.kill()
+
+    def update(self, dt):
+        pass
 
     def get_groups(self):
         for _, group in self.groups.items():

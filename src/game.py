@@ -8,7 +8,7 @@ from config import GameConfig
 from gameobject import GameObject
 from player import Player
 from enemy import Enemy
-from upgradebutton import Upgradebutton
+from upgradebutton import Button
 
 
 class Game(GameObject):
@@ -28,6 +28,10 @@ class Game(GameObject):
         self.groups["shop"] = pygame.sprite.Group()
         self.groups["player"].add(Player(middle_pos))
 
+        self.__upgrade_button_image_paths = [
+            "assets/menu/Main_Background.png",
+            "assets/menu/Main_Background.png",
+            "assets/menu/Main_Background.png"]
         self.__player_killed_enemy = False
 
         self.__last_enemy_kill_time = 0
@@ -92,7 +96,7 @@ class Game(GameObject):
             if self.__player_killed_enemy:
                 if player.score % 5 == 0:
                     player.firerate += 1
-                if player.score in (15, 50):
+                if player.score in (1, 50):
                     upgrades = [player.speed_upgrade,
                                 player.firerate_upgrade, player.weapon_upgrade]
                     for i, upgrade in enumerate(upgrades):
@@ -101,8 +105,9 @@ class Game(GameObject):
                             for sprite in self.groups["shop"].sprites():
                                 sprite.kill()
                         size = GameConfig.SIZE.value
-                        self.groups["shop"].add(Upgradebutton(
-                            (size[0] - 110 * (i+1), size[1] - 100), update_and_clear_all))
+                        self.groups["shop"].add(Button(
+                            (size[0] - 110 * (i+1), size[1] - 100), (100, 100),
+                            self.__upgrade_button_image_paths[i], None, None, update_and_clear_all))
             self.__player_killed_enemy = False
 
         # enemy upgrades
