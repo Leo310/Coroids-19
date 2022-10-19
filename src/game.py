@@ -101,7 +101,7 @@ class Game(GameObject):
                             for sprite in self.groups["shop"].sprites():
                                 sprite.kill()
                         size = GameConfig.SIZE.value
-                        self.groups["upgrades"].add(Upgradebutton(
+                        self.groups["shop"].add(Upgradebutton(
                             (size[0] - 110 * (i+1), size[1] - 100), update_and_clear_all))
             self.__player_killed_enemy = False
 
