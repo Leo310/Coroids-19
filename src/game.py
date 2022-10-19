@@ -8,6 +8,7 @@ from config import GameConfig
 from gameobject import GameObject
 from player import Player
 from enemy import Enemy
+from upgradebutton import Upgradebutton
 
 
 class Game(GameObject):
@@ -24,6 +25,7 @@ class Game(GameObject):
 
         self.groups["enemies"] = pygame.sprite.Group()
         self.groups["player"] = pygame.sprite.Group()
+        self.groups["shop"] = pygame.sprite.Group()
         self.groups["player"].add(Player(middle_pos))
 
         self.__player_killed_enemy = False
@@ -87,9 +89,21 @@ class Game(GameObject):
     def __handle_upgrades(self):
         # player upgrades
         for player in self.groups["player"].sprites():
-            if self.__player_killed_enemy and player.score % 3 == 0:
-                player.firerate += 1
-                self.__player_killed_enemy = False
+            if self.__player_killed_enemy:
+                if player.score % 5 == 0:
+                    player.firerate += 1
+                if player.score in (15, 50):
+                    upgrades = [player.speed_upgrade,
+                                player.firerate_upgrade, player.weapon_upgrade]
+                    for i, upgrade in enumerate(upgrades):
+                        def update_and_clear_all(upgrade_func=upgrade):
+                            upgrade_func()
+                            for sprite in self.groups["shop"].sprites():
+                                sprite.kill()
+                        size = GameConfig.SIZE.value
+                        self.groups["upgrades"].add(Upgradebutton(
+                            (size[0] - 110 * (i+1), size[1] - 100), update_and_clear_all))
+            self.__player_killed_enemy = False
 
         # enemy upgrades
         if time.time() - self.__last_enemy_upgrade > 6:

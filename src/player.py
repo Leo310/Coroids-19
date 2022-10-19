@@ -28,11 +28,15 @@ class Player(GameObject):
         self.__score = Score()
         self.groups["score"].add(self.__score)
 
+        self.score = 0
+
         self._layer = 10
         self.radius = 80/2
 
-        self.score = 0
-        self.firerate = 2  # per second
+        self.__speed_multiplier_upgrade = 1
+        self.__firerate_multiplier_upgrade = 1
+        self.firerate = 3  # per second
+        self.__shoot_upgrade = 0
         self.__last_shoot_time = 0
 
         self.__health = 4
@@ -47,19 +51,40 @@ class Player(GameObject):
             "assets/player/player_death_0_hit.png",
             "assets/player/player_hit.png"
         ]
+        self.__animations = []
 
         # Sounds
         self.__piu = pygame.mixer.Sound("assets/sounds/piu.wav")
         self.__death_sound = pygame.mixer.Sound(
             "assets/sounds/player_death.wav")
 
-        self.__animations = []
+    def speed_upgrade(self):
+        if self.__speed_multiplier_upgrade < 4:
+            self.__speed_multiplier_upgrade += 1
+
+    def firerate_upgrade(self):
+        if self.__firerate_multiplier_upgrade < 4:
+            self.__firerate_multiplier_upgrade += 1
+
+    def weapon_upgrade(self):
+        if self.__shoot_upgrade < 3:
+            self.__shoot_upgrade += 1
 
     def shoot(self):
-        if time.time() - self.__last_shoot_time > 1/self.firerate:
+        if time.time() - self.__last_shoot_time >\
+                1/(self.firerate * self.__firerate_multiplier_upgrade):
             shoot_direction = self.direction
-            self.groups["projectiles"].add(Projectile(
-                self.rect.center, shoot_direction))
+            if self.__shoot_upgrade == 1:
+                for i in range(2):
+                    self.groups["projectiles"].add(Projectile(
+                        self.rect.center, shoot_direction.rotate(180*i)))
+            elif self.__shoot_upgrade == 2:
+                for i in range(4):
+                    self.groups["projectiles"].add(Projectile(
+                        self.rect.center, shoot_direction.rotate(90*i)))
+            else:
+                self.groups["projectiles"].add(Projectile(
+                    self.rect.center, shoot_direction))
             self.__last_shoot_time = time.time()
 
     def hit(self):
@@ -103,11 +128,11 @@ class Player(GameObject):
             # if event.key == pygame.K_SPACE:
             #     self.shoot()
             if event.key == pygame.K_LSHIFT:
-                self.vel *= 2
+                self.vel *= self.__speed_multiplier_upgrade
 
         for event in pygame.event.get(pygame.KEYUP):
             if event.key == pygame.K_LSHIFT:
-                self.vel /= 2
+                self.vel /= self.__speed_multiplier_upgrade
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
