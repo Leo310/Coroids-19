@@ -16,12 +16,13 @@ class Button(GameObject):
         self.text = text
 
     def update(self, dt):
-        mouse_pos = pygame.mouse.get_pos()
-        if mouse_pos[0] in range(self.rect.left, self.rect.right) \
-                and mouse_pos[1] in range(self.rect.top, self.rect.bottom):
-            # if pygame.event.get(pygame.MOUSEBUTTONUP):
-            self.__callback()
-            self.kill()
+        # handle MOUSEBUTTONUP
+        if pygame.event.peek(pygame.MOUSEBUTTONDOWN):
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_pos[0] in range(self.rect.left, self.rect.right) \
+                    and mouse_pos[1] in range(self.rect.top, self.rect.bottom):
+                self.__callback()
+                self.kill()
 
         if self.text and self.font:
             text_img = self.font.render(

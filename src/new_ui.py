@@ -31,10 +31,10 @@ class UI(GameObject):
         quit_button = Button((640, 450), (400, 200),
                              "assets/menu/Quit Rect.png", 75, "QUIT", quit_pressed)
 
+        self.groups["buttons"] = pygame.sprite.Group()
         self.groups["buttons"].add(play_button)
         self.groups["buttons"].add(quit_button)
 
-        self.groups["buttons"] = pygame.sprite.Group()
         self.groups["text"] = pygame.sprite.Group()
         self.groups["text"].add(
             Text(self.__screen, (640, 100), 100, "Coroids-19", "#b68f40"))
@@ -46,10 +46,9 @@ class UI(GameObject):
         self.__back_pressed = False
 
     def update(self, dt):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        if pygame.event.peek(pygame.QUIT):
+            pygame.quit()
+            sys.exit()
         if self.__quit_pressed:
             self.__quit_pressed = False
             pygame.quit()
