@@ -121,7 +121,7 @@ class Game(GameObject):
                     button.kill()
             size = GameConfig.SIZE.value
             self.groups["shop"].add(Button(
-                (size[0] - 220 * (i+1), size[1] - 100), (200, 200),
+                (size[0] + 65 - 220 * (i+1), size[1] - 100), (200, 200),
                 self.__upgrade_button_image_paths[i], None, None, upgrade_and_clear_all))
 
     def __handle_upgrades(self):
@@ -130,7 +130,6 @@ class Game(GameObject):
             if self.__player_killed_enemy:
                 if player.score % 4 == 0:
                     player.firerate += 1
-                    player.firerate = min(player.firerate, 20)
                 if player.score == 5:
                     self.__create_shop(player)
                 elif player.score == 15:
