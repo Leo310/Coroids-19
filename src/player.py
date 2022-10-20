@@ -36,7 +36,7 @@ class Player(GameObject):
         self.__speed_multiplier_upgrade = 1
         self.__firerate_multiplier_upgrade = 1
         self.firerate = 3  # per second
-        self.__shoot_upgrade = 0
+        self.shoot_upgrade = 0
         self.__last_shoot_time = 0
 
         self.__health = 4
@@ -67,18 +67,19 @@ class Player(GameObject):
             self.__firerate_multiplier_upgrade += 1
 
     def weapon_upgrade(self):
-        if self.__shoot_upgrade < 3:
-            self.__shoot_upgrade += 1
+        if self.shoot_upgrade < 3:
+            self.shoot_upgrade += 1
 
     def shoot(self):
+        self.firerate = min(self.firerate, 12)
         if time.time() - self.__last_shoot_time >\
                 1/(self.firerate * self.__firerate_multiplier_upgrade):
             shoot_direction = self.direction
-            if self.__shoot_upgrade == 1:
+            if self.shoot_upgrade == 1:
                 for i in range(2):
                     self.groups["projectiles"].add(Projectile(
                         self.rect.center, shoot_direction.rotate(180*i)))
-            elif self.__shoot_upgrade == 2:
+            elif self.shoot_upgrade == 2:
                 for i in range(4):
                     self.groups["projectiles"].add(Projectile(
                         self.rect.center, shoot_direction.rotate(90*i)))

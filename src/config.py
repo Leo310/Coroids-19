@@ -19,3 +19,7 @@ class ProjectileConfig(Enum):
 
 class EnemyConfig(Enum):
     SIZE = (100, 100)
+
+
+class MenuConfig(Enum):
+    TEXT_COLOR = "#018CF3"

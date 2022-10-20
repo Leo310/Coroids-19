@@ -3,6 +3,7 @@ import pygame
 
 from gameobject import GameObject
 from config import GameConfig
+from config import MenuConfig
 from button import Button
 from text import Text
 
@@ -33,17 +34,19 @@ class Deathscreen(GameObject):
                              "assets/menu/Death Rect.png", 75, "Back", back_pressed)
         quit_button = Button((size[0]/2, 450), (400, 170),
                              "assets/menu/Quit Rect.png", 75, "QUIT", quit_pressed)
+
+        text_color = MenuConfig.TEXT_COLOR.value
         death_text = Text(self.__screen, (size[0]/2, 100),
-                          100, "YOU DIED!!!", "#b68f40")
+                          100, "YOU DIED!!!", text_color)
         self.__score_text = Text(
-            self.__screen, (size[0]/2, 600), 40, "Your Score: " + str(Highscore.score), "#b68f40")
+            self.__screen, (size[0]/2, 600), 40, "Your Score: " + str(Highscore.score), text_color)
         highscore_text = ""
         if Highscore.new_highscore:
             highscore_text = "New Highscore: " + str(Highscore.highscore)
         else:
             highscore_text = "Your Highscore: " + str(Highscore.highscore)
         self.__highscore_text = Text(
-            self.__screen, (size[0]/2, 670), 40, highscore_text, "#b68f40")
+            self.__screen, (size[0]/2, 670), 40, highscore_text, text_color)
 
         self.groups["buttons"] = pygame.sprite.Group()
         self.groups["buttons"].add(back_button)

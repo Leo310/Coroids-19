@@ -2,6 +2,7 @@ import time
 import pygame
 
 from gameobject import GameObject
+from config import MenuConfig
 
 
 class Button(GameObject):
@@ -20,7 +21,7 @@ class Button(GameObject):
         self.__mouse_pressed = False
 
         self.__mouse_hover = False
-        self.__mouse_clicked = False
+        self.mouse_clicked = False
         self.clicked_time = 0
 
     def update(self, dt):
@@ -32,8 +33,8 @@ class Button(GameObject):
             self.__mouse_hover = True
             if self.__mouse_pressed and not pygame.mouse.get_pressed()[0]\
                     and time.time() - self.clicked_time < 0.1:
-                self.__mouse_clicked = True
                 self.__callback()
+                self.mouse_clicked = True
 
         if self.text and self.font:
             text_img = self.font.render(
@@ -47,7 +48,7 @@ class Button(GameObject):
             self.__mouse_pressed = True
 
         self.__color = "#d7fcd4"
-        if self.__mouse_clicked:
-            self.__color = "#ff0000"
+        if self.mouse_clicked:
+            self.__color = MenuConfig.TEXT_COLOR.value
         elif self.__mouse_hover:
             self.__color = "#f0f000"

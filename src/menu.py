@@ -3,6 +3,7 @@ import pygame
 
 from gameobject import GameObject
 from config import GameConfig
+from config import MenuConfig
 from button import Button
 from text import Text
 
@@ -38,17 +39,21 @@ class Menu(GameObject):
 
         for i in range(0, 4):
             def difficulty(lvl=i):
+                for button in self.groups["buttons"].sprites():
+                    button.mouse_clicked = False
                 self.__difficulty = lvl
             self.groups["buttons"].add(Button((size[0]/2 - 60 + 160 * i, 400), (150, 100),
                                               "assets/menu/Play Rect.png", 40, str(i) + "x", difficulty))
         self.groups["buttons"].add(play_button)
         self.groups["buttons"].add(quit_button)
+        text_color = MenuConfig.TEXT_COLOR.value
         self.groups["text"].add(
-            Text(self.__screen, (size[0]/2, 100), 100, "Coroids-19", "#b68f40"))
+            Text(self.__screen, (size[0]/2, 100), 100, "Coroids-19", text_color))
         self.groups["text"].add(
-            Text(self.__screen, (270, 400), 40, "Impfstatus: ", "#b68f40"))
+            Text(self.__screen, (270, 400), 40, "Impfstatus: ", text_color))
         self.groups["text"].add(
-            Text(self.__screen, (size[0]/2, 700), 40, "W, A, S, D, Shift, Space", "#b68f40"))
+            Text(self.__screen, (size[0]/2, 700), 40,
+                 "W, A, S, D, Shift, Space", text_color))
 
     def update(self, dt):
         if pygame.event.peek(pygame.QUIT):
